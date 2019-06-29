@@ -4,6 +4,7 @@
 
 function help(){
 	echo -e "help \t\t\t\t\t displays this help info"
+	echo -e "remove [thing] \t\t\t\t\t same as rm -frv [thing]"
 	echo -e "PackageInstall [package] \t\t install [package]"
 	echo -e "PackageUninstall [package] \t\t uninstall [package]"
 	echo -e "PackageUpdate [package] \t\t update [package]"
@@ -26,7 +27,6 @@ function help(){
 }
 
 function get(){
-	cd `pwd`
 	if [ "$1"=="clone" ]; then
 		git clone "$2"
 	fi
@@ -306,6 +306,9 @@ function ServiceDisable(){
 		sudo rc-update del "$*"  "$runlevel"
 	fi
 }
+function remove(){
+	rm -frv "$*"
+}
 
 function new_cpp(){
 		mkdir `pwd`"/$3"
@@ -327,4 +330,5 @@ function new_cpp(){
 		`pwd`"/./build.sh"		
 }
 
+cd `pwd`
 $*
