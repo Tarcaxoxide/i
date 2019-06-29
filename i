@@ -21,7 +21,7 @@ function help(){
 	echo -e "ServiceEnable [service] \t\t enables [service]"
 	echo -e "ServiceDisable [service] \t\t disables [service]"
 	echo -e "ServiceStatus [service] \t\t gets the status of [service]"
-	echo -e "new_cpp [name] \t\t\t\t makes a new cpp directory using make called [name]"
+	echo -e "NewCPP [name] \t\t\t\t makes a new cpp directory using make called [name]"
 	echo -e "ServiceStartups \t\t\t gets all services that would start on startup"
 	echo -e "get * \n\t sync overwrite local files with remote files \n\t push pushes changes to remote \n\t clone does what it normaly does"
 }
@@ -310,9 +310,9 @@ function remove(){
 	rm -frv "$*"
 }
 
-function new_cpp(){
-		mkdir `pwd`"/$3"
-		cd `pwd`"/$3"
+function NewCPP(){
+		mkdir `pwd`"/$*"
+		cd `pwd`"/$*"
 		mkdir `pwd`"/src"
 		echo '#include <iostream>'>>`pwd`"/src/Main.cpp"
 		echo 'int main(){'>>`pwd`"/src/Main.cpp"
@@ -322,12 +322,12 @@ function new_cpp(){
 		echo 'cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug'>>`pwd`"/build.sh"
 		chmod +x `pwd`"/build.sh"
 		echo 'cmake_minimum_required (VERSION 3.5)' >> `pwd`"/CMakeLists.txt"
-		echo "project ($3)" >> `pwd`"/CMakeLists.txt"
+		echo "project ($*)" >> `pwd`"/CMakeLists.txt"
 		echo 'set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")' >> `pwd`"/CMakeLists.txt"
 		echo 'set (source_dir "${PROJECT_SOURCE_DIR}/src/")' >> `pwd`"/CMakeLists.txt"
 		echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
-		echo "add_executable ($3"' ${source_files})' >> `pwd`"/CMakeLists.txt"
-		`pwd`"/./build.sh"		
+		echo "add_executable ($*"' ${source_files})' >> `pwd`"/CMakeLists.txt"
+		`pwd`"/./build.sh"
 }
 
 cd `pwd`
