@@ -2,9 +2,15 @@
 
 #editor="nano --nowrap --constantshow --autoindent"
 
+function dice(){
+	 let result=$1*$((1 + RANDOM % $2))
+	 echo $result
+}
+
 function help(){
 	echo -e "help \t\t\t\t\t displays this help info"
-	echo -e "remove [thing] \t\t\t\t\t same as rm -frv [thing]"
+	echo -e "dice [amount] [sides] \t\t\t roll [amount] of [sides]d dice"
+	echo -e "remove [thing] \t\t\t\t same as rm -frv [thing]"
 	echo -e "PackageInstall [package] \t\t install [package]"
 	echo -e "PackageUninstall [package] \t\t uninstall [package]"
 	echo -e "PackageUpdate [package] \t\t update [package]"
@@ -311,6 +317,7 @@ function remove(){
 }
 
 function NewCPP(){
+	if type "make" &> /dev/null; then
 		mkdir `pwd`"/$*"
 		cd `pwd`"/$*"
 		mkdir `pwd`"/src"
@@ -328,6 +335,9 @@ function NewCPP(){
 		echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
 		echo "add_executable ($*"' ${source_files})' >> `pwd`"/CMakeLists.txt"
 		`pwd`"/./build.sh"
+		else
+		echo "you do not have make installed"
+	fi
 }
 
 cd `pwd`
