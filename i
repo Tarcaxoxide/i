@@ -22,7 +22,25 @@ function help(){
 	echo -e "ServiceStatus [service] \t\t gets the status of [service]"
 	echo -e "new_cpp [name] \t\t\t\t makes a new cpp directory using make called [name]"
 	echo -e "ServiceStartups \t\t\t gets all services that would start on startup"
-	
+	echo -e "get * \n\t sync overwrite local files with remote files \n\t push pushes changes to remote \n\t clone does what it normaly does"
+}
+
+function get(){
+	cd `pwd`
+	if [ "$1"=="clone" ]; then
+		git clone "$2"
+	fi
+	if [ "$1"=="pull" ]; then
+		git pull
+	fi
+	if [ "$1" == "sync" ]; then
+		git reset --hard
+		git pull
+	fi
+	if [ "$1" == "push" ]; then
+		git commit *
+		git push
+	fi
 }
 
 function PackageInstall(){
