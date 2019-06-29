@@ -1,163 +1,295 @@
 #!/bin/bash
 
-##settings
-editor="nano --nowrap --constantshow --autoindent"
+#editor="nano --nowrap --constantshow --autoindent"
 
-##enviroment variables
-PIP=`wget http://ipecho.net/plain -O - -q ; echo`
+function help(){
+	echo -e "help \t\t\t\t\t displays this help info"
+	echo -e "PackageInstall [package] \t\t install [package]"
+	echo -e "PackageUninstall [package] \t\t uninstall [package]"
+	echo -e "PackageUpdate [package] \t\t update [package]"
+	echo -e "PackageDBCheck \t\t\t\t updates database"
+	echo -e "PackageListRepositories \t\t list repositories"
+	echo -e "PackageListPackages \t\t\t list packages that are installed"
+	echo -e "PackageSearch [package] \t\t search for [package] in repositories"
+	echo -e "PackageInfo [package] \t\t\t gets information on [package]"
+	echo -e "PackageClean \t\t\t cleans up"
+	echo -e "PackageSystemUpdate \t\t\t performs a full system update"
+	echo -e "ServiceStart [service] \t\t\t starts [service]"
+	echo -e "ServiceRestart [service] \t\t\t restarts [service]"
+	echo -e "ServiceStop [service] \t\t\t stop [service]"
+	echo -e "ServiceEnable [service] \t\t\t enables [service]"
+	echo -e "ServiceDisable [service] \t\t\t disables [service]"
+	echo -e "ServiceStatus [service] \t\t\t gets the status of [service]"
+	echo -e "new_cpp [name] \t\t\t makes a new cpp directory using make called [name]"
+	echo -e "ServiceStartups \t\t\t gets all services that would start on startup"
+	
+}
 
-if [ "$init_check" != "1" ];then 
-	if type "systemctl" &> /dev/null; then
-		ServiceStart="systemctl start"
-		ServiceStop="systemctl stop"
-		ServiceRestart="systemctl restart"
-		ServiceEnable="systemctl enable"
-		ServiceDisable="systemctl disable"
-		export init_check="1"
-	fi
-fi
-
-if [ "$package_check" != "1" ];then 
+function PackageInstall(){
 	if type "emerge" &> /dev/null; then 
- 		export PackageInstall='emerge'
-        	export PackageUninstall='emerge --unmerge'
-        	export PackageUpdate='emerge --update --deep'
-        	export PackageDBCheck='emerge --sync'
-        	export PackageListRepositories='ls /etc/portage/repos.conf/'
-        	export PackageListPackages='pacman -Q | more'
-        	export PackageSearch='emerge --search'
-        	export PackageInfo='emerge --info'
-        	export PackageCleanCache='emerge --clean'
-        	export PackageSystemUpdate='emerge --update --deep @world'
-        	export package_check="1"
+		sudo emerge "$*"
 	fi
-	if type "pacman" &> /dev/null; then 
-		export PackageInstall='pacman -S'
-		export PackageUninstall='pacman -Rsc'
-		export PackageUpdate='pacman -Syu'
-		export PackageDBCheck='pacman -Syy'
-		export PackageListRepositories='cat /etc/pacman.d/mirrorlist | more'
-		export PackageListPackages='pacman -Q | more'
-		export PackageSearch='pacman -Ss'
-		export PackageInfo='pacman -Si'
-		export PackageCleanCache='pacman -Sc'
-		export PackageSystemUpdate='pacman -Syyu'
-		export package_check="1"
+	if type "pacman" &> /dev/null; then
+		sudo pacman -S "$*"
 	fi
-	if type "apt-get" &> /dev/null; then 
-		export PackageInstall='apt-get install'
-		export PackageUninstall='apt-get remove'
-		export PackageUpdate='apt-get install --only-upgrade'
-		export PackageDBCheck='apt-get update'
-		export PackageListRepositories='echo command undefined'
-		export PackageListPackages='echo command undefined'
-		export PackageSearch='apt-cache search'
-		export PackageInfo='apt-cache show'
-		export PackageCleanCache='apt-get autoclean'
-		export PackageSystemUpdate='sudo apt-get dist-upgrade'
-		export package_check="1"
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get install "$*"
 	fi
-	if type "zypper" &> /dev/null; then 
-		export PackageInstall='zypper install'
-		export PackageUninstall='zypper remove'
-		export PackageUpdate='zypper update'
-		export PackageDBCheck='zypper refresh'
-		export PackageListRepositories='zypper repos'
-		export PackageListPackages='zypper packages'
-		export PackageSearch='zypper search'
-		export PackageInfo='zypper info'
-		export PackageCleanCache='zypper clean --all'
-		export PackageSystemUpdate='zypper update'
-		export package_check="1"
+	if type "zypper" &> /dev/null; then
+		sudo zypper install "$*"
 	fi
-	if type "dnf" &> /dev/null; then 
-		export PackageInstall='dnf install'
-		export PackageUninstall='dnf remove'
-		export PackageUpdate='dnf update'
-		export PackageDBCheck='dnf check-update'
-		export PackageListRepositories='dnf repolist'
-		export PackageListPackages='dnf list installed'
-		export PackageSearch='dnf search'
-		export PackageInfo='dnf info'
-		export PackageCleanCache=''
-		export PackageSystemUpdate='dnf update && dnf upgrade'
-		export package_check="1"
+	if type "dnf" &> /dev/null; then
+		sudo dnf install "$*"
 	fi
-	if type "yum" &> /dev/null; then 
-		export PackageInstall='yum install'
-		export PackageUninstall='yum remove'
-		export PackageUpdate='yum update'
-		export PackageDBCheck='yum check-update'
-		export PackageListRepositories='yum repolist'
-		export PackageListPackages='yum list'
-		export PackageSearch='yum search'
-		export PackageInfo='yum info'
-		export PackageCleanCache='yum clean all'
-		export PackageSystemUpdate='yum update'
-		export package_check="1"
+	if type "yum" &> /dev/null; then
+		sudo yum install "&*"
 	fi
-fi
+}
+function PackageUninstall(){
+	if type "emerge" &> /dev/null; then
+		sudo emerge --unmerge "$*"
+	fi
+	if type "pacman" &> /dev/null; then
+		sudo pacman -Rsc "$*"
+	fi
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get remove "$*"
+	fi
+	if type "zypper" &> /dev/null; then
+		sudo zypper remove "$*"
+	fi
+	if type "dnf" &> /dev/null; then
+		sudo dnf remove "$*"
+	fi
+	if type "yum" &> /dev/null; then
+		sudo yum remove "&*"
+	fi
+}
+function PackageUpdate(){
+	if type "emerge" &> /dev/null; then
+		sudo emerge --update --deep "$*"
+	fi
+	if type "pacman" &> /dev/null; then
+		sudo pacman -Syu "$*"
+	fi
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get install --only-upgrade"$*"
+	fi
+	if type "zypper" &> /dev/null; then
+		sudo zypper update "$*"
+	fi
+	if type "dnf" &> /dev/null; then
+		sudo dnf update "$*"
+	fi
+	if type "yum" &> /dev/null; then
+		sudo yum update "&*"
+	fi
+}
+function PackageDBCheck(){
+	if type "emerge" &> /dev/null; then
+		sudo emerge --sync
+	fi
+	if type "pacman" &> /dev/null; then
+		sudo pacman -Syy
+	fi
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get update
+	fi
+	if type "zypper" &> /dev/null; then
+		sudo zypper refresh
+	fi
+	if type "dnf" &> /dev/null; then
+		sudo dnf check-update
+	fi
+	if type "yum" &> /dev/null; then
+		sudo yum check-update
+	fi
+}
+function PackageListRepositories(){
+	if type "emerge" &> /dev/null; then
+		ls /etc/portage/repos.conf/
+	fi
+	if type "pacman" &> /dev/null; then
+		cat /etc/pacman.d/mirrorlist | more
+	fi
+	if type "apt-get" &> /dev/null; then
+		echo command undefined
+	fi
+	if type "zypper" &> /dev/null; then
+		zypper repos
+	fi
+	if type "dnf" &> /dev/null; then
+		dnf repolist
+	fi
+	if type "yum" &> /dev/null; then
+		yum repolist
+	fi
+}
+function PackageListPackages(){
+	if type "emerge" &> /dev/null; then
+		echo command undefined
+	fi
+	if type "pacman" &> /dev/null; then
+		pacman -Q | more
+	fi
+	if type "apt-get" &> /dev/null; then
+		echo command undefined
+	fi
+	if type "zypper" &> /dev/null; then
+		zypper packages
+	fi
+	if type "dnf" &> /dev/null; then
+		dnf list installed
+	fi
+	if type "yum" &> /dev/null; then
+		yum list
+	fi
+}
+function PackageSearch(){
+	if type "emerge" &> /dev/null; then
+		emerge --search "$*"
+	fi
+	if type "pacman" &> /dev/null; then
+		pacman -Ss "$*"
+	fi
+	if type "apt-get" &> /dev/null; then
+		apt-cache search "$*"
+	fi
+	if type "zypper" &> /dev/null; then
+		zypper search "$*"
+	fi
+	if type "dnf" &> /dev/null; then
+		dnf search "$*"
+	fi
+	if type "yum" &> /dev/null; then
+		yum search "$*"
+	fi
+}
+function PackageInfo(){
+	if type "emerge" &> /dev/null; then
+		emerge --info "$*"
+	fi
+	if type "pacman" &> /dev/null; then
+		pacman -Si "$*"
+	fi
+	if type "apt-get" &> /dev/null; then
+		apt-cache show "$*"
+	fi
+	if type "zypper" &> /dev/null; then
+		zypper info"$*"
+	fi
+	if type "dnf" &> /dev/null; then
+		dnf info "$*"
+	fi
+	if type "yum" &> /dev/null; then
+		yum info "$*"
+	fi
+}
+function PackageClean(){
+	if type "emerge" &> /dev/null; then
+		sudo emerge --ask --clean --deep
+		sudo emerge --ask --depclean
+	fi
+	if type "pacman" &> /dev/null; then
+		sudo pacman -Sc
+	fi
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get autoclean
+	fi
+	if type "zypper" &> /dev/null; then
+		sudo zypper clean --all
+	fi
+	if type "dnf" &> /dev/null; then
+		sudo dnf clean all
+	fi
+	if type "yum" &> /dev/null; then
+		sudo yum clean all
+	fi
+}
+function PackageSystemUpdate(){
+	if type "emerge" &> /dev/null; then
+		sudo emerge --update --deep @world
+	fi
+	if type "pacman" &> /dev/null; then
+		sudo pacman -Syyu
+	fi
+	if type "apt-get" &> /dev/null; then
+		sudo apt-get dist-upgrade
+	fi
+	if type "zypper" &> /dev/null; then
+		sudo zypper update
+	fi
+	if type "dnf" &> /dev/null; then
+		sudo dnf update
+		sudo dnf upgrade
+	fi
+	if type "yum" &> /dev/null; then
+		sudo yum update
+	fi
+}
 
-##commands below
-if [ "$1" == "test" ];then
-	if [ "$2" == "pwd" ];then
-		pwd
+function ServiceStart(){
+	if type "systemctl" &> /dev/null; then
+		sudo systemctl start "$*"
 	fi
-fi
-
-#PackageInstall
-if [ "$1" == "install" ];then
-	sudo $PackageInstall "$2"
-fi
-
-#PackageUninstall
-if [ "$1" == "uninstall" ];then
-	sudo $PackageUninstall "$2"
-fi
-
-#PackageUpdate
-#PackageSystemUpdate
-#PackageDBCheck
-if [ "$1" == "update" ];then
-	if [ "$2" == "package" ];then
-		sudo $PackageUpdate "$3"
+	if type "rc-service" &> /dev/null; then
+		sudo rc-service "$*"  start
 	fi
-	if [ "$2" == "system" ];then
-		sudo $PackageSystemUpdate
+}
+function ServiceStop(){
+	if type "systemctl" &> /dev/null; then
+		sudo systemctl stop "$*"
 	fi
-	if [ "$2" == "repositories" ];then
-		sudo $PackageDBCheck
+	if type "rc-service" &> /dev/null; then
+		sudo rc-service "$*"  stop
 	fi
-fi
-
-#PackageListRepositories
-#PackageListPackages
-if [ "$1" == "list" ];then
-	if [ "$2" == "repositories" ];then
-		$PackageListRepositories
+}
+function ServiceRestart(){
+	if type "systemctl" &> /dev/null; then
+		sudo systemctl restart "$*"
 	fi
-	if [ "$2" == "packages" ];then
-		$PackageListPackages
+	if type "rc-service" &> /dev/null; then
+		sudo rc-service "$*"  restart
 	fi
-fi
+}
+function ServiceStatus(){
+	if type "systemctl" &> /dev/null; then
+		sudo systemctl status "$*"
+	fi
+	if type "rc-service" &> /dev/null; then
+		sudo rc-service "$*"  status
+	fi
+}
+function ServiceStartups(){
+	if type "systemctl" &> /dev/null; then
+		systemctl list-unit-files --type=service
+	fi
+	if type "rc-service" &> /dev/null; then
+		rc-update -v show
+	fi
+}
+function ServiceEnable(){
+	if type "systemctl" &> /dev/null; then
+		 sudo systemctl enable "$*" 
+	fi
+	if type "rc-service" &> /dev/null; then
+		runlevel="default"
+		read -p "runlevel(default):" runlevel
+		sudo rc-update add "$*"  "$runlevel"
+	fi
+}
+function ServiceDisable(){
+	if type "systemctl" &> /dev/null; then
+		 sudo systemctl disable "$*" 
+	fi
+	if type "rc-service" &> /dev/null; then
+		runlevel="default"
+		read -p "runlevel(default):" runlevel
+		sudo rc-update del "$*"  "$runlevel"
+	fi
+}
 
-#PackageSearch
-if [ "$1" == "search" ];then
-	$PackageSearch "$2"
-fi
-
-#PackageInfo
-if [ "$1" == "info" ];then
-	$PackageInfo "$2"
-fi
-
-#PackageCleanCache
-if [ "$1" == "cleanup" ];then
-	$PackageCleanCache
-fi
-
-if [ "$1" == "make" ];then
-	if [ "$2" == "new" ];then
+function new_cpp(){
 		mkdir `pwd`"/$3"
 		cd `pwd`"/$3"
 		mkdir `pwd`"/src"
@@ -175,58 +307,6 @@ if [ "$1" == "make" ];then
 		echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
 		echo "add_executable ($3"' ${source_files})' >> `pwd`"/CMakeLists.txt"
 		`pwd`"/./build.sh"		
-	fi
-fi
+}
 
-if [ "$1" == "remove" ];then
-	rm -frv `pwd`"/$2"
-fi
-
-if [ "$1" == "edit" ];then
-	if [ "$2" == "self" ]
-	then
-		$editor ~/.local/bin/i
-	else
-		$editor `pwd`"/$2"
-	fi
-fi
-
-if [ "$1" == "start" ];then
-	if [ "$2" == "kde" ];then
-		export command="startkde"
-		startx
-	fi
-	if [ "$2" == "i3" ];then
-		export command='i3'
-		startx
-	fi
-	if [ "$2" == "ipfs" ];then
-		ipfs daemon
-	fi
-fi
-
-if [ "$1" == "ip" ];then
-	echo "public : $PIP"
-fi
-
-if [ "$1" == "generate" ] ;then
-	if [ "$2" == "random" ] ;then
-		if [ "$3" == "number" ] ;then
-			echo $((1 + RANDOM % $4))
-		fi
-	fi
-fi
-
-exit
-if type "" > /dev/null; then 
-		PackageInstall=''
-		PackageUninstall=''
-		PackageUpdate=''
-		PackageDBCheck=''
-		PackageListRepositories=''
-		PackageListPackages=''
-		PackageSearch=''
-		PackageInfo=''
-		PackageCleanCache=''
-		PackageSystemUpdate=''
-fi
+$*
