@@ -8,11 +8,10 @@ function UpdateI(){
 	git push
 }
 
-function dice(){
-	 let result=$1*$((1 + RANDOM % $2))
+function roll(){
+	 let result=$1*$((1 + RANDOM % $3))
 	 echo $result
 }
-
 
 function get(){
 	if [ "$1"=="clone" ]; then
@@ -31,7 +30,7 @@ function get(){
 	fi
 }
 
-function Check_DB(){ 
+function check_db(){ 
 	args=$(echo "$*" |grep -v "$1")
 	if type "emerge" &> /dev/null; then
 		sudo emerge --sync
@@ -223,7 +222,7 @@ function package(){
 
 function system(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Update" ];then
+	if [ "$1" == "update" ];then
 		if type "emerge" &> /dev/null; then
 			sudo emerge --update --deep @world
 		fi
@@ -248,7 +247,7 @@ function system(){
 
 function start(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl start "$args"
 		fi
@@ -259,7 +258,7 @@ function start(){
 }
 function stop(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl stop "$args"
 		fi
@@ -270,7 +269,7 @@ function stop(){
 }
 function restart(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl restart "$args"
 		fi
@@ -280,7 +279,7 @@ function restart(){
 	fi
 }
 function status(){
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl status "$args"
 		fi
@@ -291,7 +290,7 @@ function status(){
 }
 function startups(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			systemctl list-unit-files --type=service
 		fi
@@ -302,7 +301,7 @@ function startups(){
 }
 function enable(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl enable "$args" 
 		fi
@@ -315,7 +314,7 @@ function enable(){
 }
 function disable(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "Service" ];then
+	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl disable "$args" 
 		fi
