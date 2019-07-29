@@ -1,36 +1,18 @@
 #!/bin/bash
 
-#editor="nano --nowrap --constantshow --autoindent"
+export EDITOR='nano'
+
+function UpdateI(){
+	git add .
+	git commit
+	git push
+}
 
 function dice(){
 	 let result=$1*$((1 + RANDOM % $2))
 	 echo $result
 }
 
-function help(){
-	echo -e "help \t\t\t\t\t displays this help info"
-	echo -e "dice [amount] [sides] \t\t\t roll [amount] of [sides]d dice"
-	echo -e "remove [thing] \t\t\t\t same as rm -frv [thing]"
-	echo -e "PackageInstall [package] \t\t install [package]"
-	echo -e "PackageUninstall [package] \t\t uninstall [package]"
-	echo -e "PackageUpdate [package] \t\t update [package]"
-	echo -e "PackageDBCheck \t\t\t\t updates database"
-	echo -e "PackageListRepositories \t\t list repositories"
-	echo -e "PackageListPackages \t\t\t list packages that are installed"
-	echo -e "PackageSearch [package] \t\t search for [package] in repositories"
-	echo -e "PackageInfo [package] \t\t\t gets information on [package]"
-	echo -e "PackageClean \t\t\t\t cleans up"
-	echo -e "PackageSystemUpdate \t\t\t performs a full system update"
-	echo -e "ServiceStart [service] \t\t\t starts [service]"
-	echo -e "ServiceRestart [service] \t\t restarts [service]"
-	echo -e "ServiceStop [service] \t\t\t stop [service]"
-	echo -e "ServiceEnable [service] \t\t enables [service]"
-	echo -e "ServiceDisable [service] \t\t disables [service]"
-	echo -e "ServiceStatus [service] \t\t gets the status of [service]"
-	echo -e "NewCPP [name] \t\t\t\t makes a new cpp directory using make called [name]"
-	echo -e "ServiceStartups \t\t\t gets all services that would start on startup"
-	echo -e "get * \n\t sync overwrite local files with remote files \n\t push pushes changes to remote \n\t clone does what it normaly does"
-}
 
 function get(){
 	if [ "$1"=="clone" ]; then
@@ -96,7 +78,7 @@ function repository(){
 
 function package(){
 	args=$(echo "$*" |grep -v "$1")
-	fi [ "$1" == "install" ];then
+	if [ "$1" == "install" ];then
 		if type "emerge" &> /dev/null; then 
 			sudo emerge "$args"
 		fi
@@ -116,7 +98,7 @@ function package(){
 			sudo yum install "&args"
 		fi
 	fi
-	fi [ "$1" == "uninstall" ];then
+	if [ "$1" == "uninstall" ];then
 		if type "emerge" &> /dev/null; then
 			sudo emerge --unmerge "$args"
 		fi
