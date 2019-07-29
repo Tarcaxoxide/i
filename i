@@ -49,67 +49,8 @@ function get(){
 	fi
 }
 
-function PackageInstall(){
-	if type "emerge" &> /dev/null; then 
-		sudo emerge "$*"
-	fi
-	if type "pacman" &> /dev/null; then
-		sudo pacman -S "$*"
-	fi
-	if type "apt-get" &> /dev/null; then
-		sudo apt-get install "$*"
-	fi
-	if type "zypper" &> /dev/null; then
-		sudo zypper install "$*"
-	fi
-	if type "dnf" &> /dev/null; then
-		sudo dnf install "$*"
-	fi
-	if type "yum" &> /dev/null; then
-		sudo yum install "&*"
-	fi
-}
-function PackageUninstall(){
-	if type "emerge" &> /dev/null; then
-		sudo emerge --unmerge "$*"
-	fi
-	if type "pacman" &> /dev/null; then
-		sudo pacman -Rsc "$*"
-	fi
-	if type "apt-get" &> /dev/null; then
-		sudo apt-get remove "$*"
-	fi
-	if type "zypper" &> /dev/null; then
-		sudo zypper remove "$*"
-	fi
-	if type "dnf" &> /dev/null; then
-		sudo dnf remove "$*"
-	fi
-	if type "yum" &> /dev/null; then
-		sudo yum remove "&*"
-	fi
-}
-function PackageUpdate(){
-	if type "emerge" &> /dev/null; then
-		sudo emerge --update --deep "$*"
-	fi
-	if type "pacman" &> /dev/null; then
-		sudo pacman -Syu "$*"
-	fi
-	if type "apt-get" &> /dev/null; then
-		sudo apt-get install --only-upgrade"$*"
-	fi
-	if type "zypper" &> /dev/null; then
-		sudo zypper update "$*"
-	fi
-	if type "dnf" &> /dev/null; then
-		sudo dnf update "$*"
-	fi
-	if type "yum" &> /dev/null; then
-		sudo yum update "&*"
-	fi
-}
-function PackageDBCheck(){
+function Check_DB(){ 
+	args=$(echo "$*" |grep -v "$1")
 	if type "emerge" &> /dev/null; then
 		sudo emerge --sync
 	fi
@@ -129,214 +70,308 @@ function PackageDBCheck(){
 		sudo yum check-update
 	fi
 }
-function PackageListRepositories(){
-	if type "emerge" &> /dev/null; then
-		ls /etc/portage/repos.conf/
-	fi
-	if type "pacman" &> /dev/null; then
-		cat /etc/pacman.d/mirrorlist | more
-	fi
-	if type "apt-get" &> /dev/null; then
-		echo command undefined
-	fi
-	if type "zypper" &> /dev/null; then
-		zypper repos
-	fi
-	if type "dnf" &> /dev/null; then
-		dnf repolist
-	fi
-	if type "yum" &> /dev/null; then
-		yum repolist
-	fi
-}
-function PackageListPackages(){
-	if type "emerge" &> /dev/null; then
-		echo command undefined
-	fi
-	if type "pacman" &> /dev/null; then
-		pacman -Q | more
-	fi
-	if type "apt-get" &> /dev/null; then
-		echo command undefined
-	fi
-	if type "zypper" &> /dev/null; then
-		zypper packages
-	fi
-	if type "dnf" &> /dev/null; then
-		dnf list installed
-	fi
-	if type "yum" &> /dev/null; then
-		yum list
-	fi
-}
-function PackageSearch(){
-	if type "emerge" &> /dev/null; then
-		emerge --search "$*"
-	fi
-	if type "pacman" &> /dev/null; then
-		pacman -Ss "$*"
-	fi
-	if type "apt-get" &> /dev/null; then
-		apt-cache search "$*"
-	fi
-	if type "zypper" &> /dev/null; then
-		zypper search "$*"
-	fi
-	if type "dnf" &> /dev/null; then
-		dnf search "$*"
-	fi
-	if type "yum" &> /dev/null; then
-		yum search "$*"
-	fi
-}
-function PackageInfo(){
-	if type "emerge" &> /dev/null; then
-		emerge --info "$*"
-	fi
-	if type "pacman" &> /dev/null; then
-		pacman -Si "$*"
-	fi
-	if type "apt-get" &> /dev/null; then
-		apt-cache show "$*"
-	fi
-	if type "zypper" &> /dev/null; then
-		zypper info"$*"
-	fi
-	if type "dnf" &> /dev/null; then
-		dnf info "$*"
-	fi
-	if type "yum" &> /dev/null; then
-		yum info "$*"
-	fi
-}
-function PackageClean(){
-	if type "emerge" &> /dev/null; then
-		sudo emerge --ask --clean --deep
-		sudo emerge --ask --depclean
-	fi
-	if type "pacman" &> /dev/null; then
-		sudo pacman -Sc
-	fi
-	if type "apt-get" &> /dev/null; then
-		sudo apt-get autoclean
-	fi
-	if type "zypper" &> /dev/null; then
-		sudo zypper clean --all
-	fi
-	if type "dnf" &> /dev/null; then
-		sudo dnf clean all
-	fi
-	if type "yum" &> /dev/null; then
-		sudo yum clean all
-	fi
-}
-function PackageSystemUpdate(){
-	if type "emerge" &> /dev/null; then
-		sudo emerge --update --deep @world
-	fi
-	if type "pacman" &> /dev/null; then
-		sudo pacman -Syyu
-	fi
-	if type "apt-get" &> /dev/null; then
-		sudo apt-get dist-upgrade
-	fi
-	if type "zypper" &> /dev/null; then
-		sudo zypper update
-	fi
-	if type "dnf" &> /dev/null; then
-		sudo dnf update
-		sudo dnf upgrade
-	fi
-	if type "yum" &> /dev/null; then
-		sudo yum update
+function repository(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "list" ];then
+		if type "emerge" &> /dev/null; then
+			ls /etc/portage/repos.conf/
+		fi
+		if type "pacman" &> /dev/null; then
+			cat /etc/pacman.d/mirrorlist | more
+		fi
+		if type "apt-get" &> /dev/null; then
+			echo command undefined
+		fi
+		if type "zypper" &> /dev/null; then
+			zypper repos
+		fi
+		if type "dnf" &> /dev/null; then
+			dnf repolist
+		fi
+		if type "yum" &> /dev/null; then
+			yum repolist
+		fi
 	fi
 }
 
-function ServiceStart(){
-	if type "systemctl" &> /dev/null; then
-		sudo systemctl start "$*"
+function package(){
+	args=$(echo "$*" |grep -v "$1")
+	fi [ "$1" == "install" ];then
+		if type "emerge" &> /dev/null; then 
+			sudo emerge "$args"
+		fi
+		if type "pacman" &> /dev/null; then
+			sudo pacman -S "$args"
+		fi
+		if type "apt-get" &> /dev/null; then
+			sudo apt-get install "$args"
+		fi
+		if type "zypper" &> /dev/null; then
+			sudo zypper install "$args"
+		fi
+		if type "dnf" &> /dev/null; then
+			sudo dnf install "$args"
+		fi
+		if type "yum" &> /dev/null; then
+			sudo yum install "&args"
+		fi
 	fi
-	if type "rc-service" &> /dev/null; then
-		sudo rc-service "$*"  start
+	fi [ "$1" == "uninstall" ];then
+		if type "emerge" &> /dev/null; then
+			sudo emerge --unmerge "$args"
+		fi
+		if type "pacman" &> /dev/null; then
+			sudo pacman -Rsc "$args"
+		fi
+		if type "apt-get" &> /dev/null; then
+			sudo apt-get remove "$args"
+		fi
+		if type "zypper" &> /dev/null; then
+			sudo zypper remove "$args"
+		fi
+		if type "dnf" &> /dev/null; then
+			sudo dnf remove "$args"
+		fi
+		if type "yum" &> /dev/null; then
+			sudo yum remove "&args"
+		fi
+	fi
+	if [ "$1" == "update" ];then
+		if type "emerge" &> /dev/null; then
+			sudo emerge --update --deep "$args"
+		fi
+		if type "pacman" &> /dev/null; then
+			sudo pacman -Syu "$args"
+		fi
+		if type "apt-get" &> /dev/null; then
+			sudo apt-get install --only-upgrade "$args"
+		fi
+		if type "zypper" &> /dev/null; then
+			sudo zypper update "$args"
+		fi
+		if type "dnf" &> /dev/null; then
+			sudo dnf update "$args"
+		fi
+		if type "yum" &> /dev/null; then
+			sudo yum update "&args"
+		fi
+	fi
+	if [ "$1" == "list" ];then
+		if type "emerge" &> /dev/null; then
+			echo command undefined
+		fi
+		if type "pacman" &> /dev/null; then
+			pacman -Q | more
+		fi
+		if type "apt-get" &> /dev/null; then
+			echo command undefined
+		fi
+		if type "zypper" &> /dev/null; then
+			zypper packages
+		fi
+		if type "dnf" &> /dev/null; then
+			dnf list installed
+		fi
+		if type "yum" &> /dev/null; then
+			yum list
+		fi
+	fi
+	if [ "$1" == "search" ];then
+		if type "emerge" &> /dev/null; then
+			emerge --search "$args"
+		fi
+		if type "pacman" &> /dev/null; then
+			pacman -Ss "$args"
+		fi
+		if type "apt-get" &> /dev/null; then
+			apt-cache search "$args"
+		fi
+		if type "zypper" &> /dev/null; then
+			zypper search "$args"
+		fi
+		if type "dnf" &> /dev/null; then
+			dnf search "$args"
+		fi
+		if type "yum" &> /dev/null; then
+			yum search "$args"
+		fi
+	fi
+	if [ "$1" == "info" ];then
+		if type "emerge" &> /dev/null; then
+			emerge --info "$args"
+		fi
+		if type "pacman" &> /dev/null; then
+			pacman -Si "$args"
+		fi
+		if type "apt-get" &> /dev/null; then
+			apt-cache show "$args"
+		fi
+		if type "zypper" &> /dev/null; then
+			zypper info"$args"
+		fi
+		if type "dnf" &> /dev/null; then
+			dnf info "$args"
+		fi
+		if type "yum" &> /dev/null; then
+			yum info "$args"
+		fi
+	fi
+	if [ "$1" == "cleanup" ];then
+		if type "emerge" &> /dev/null; then
+			sudo emerge --ask --clean --deep
+			sudo emerge --ask --depclean
+		fi
+		if type "pacman" &> /dev/null; then
+			sudo pacman -Sc
+		fi
+		if type "apt-get" &> /dev/null; then
+			sudo apt-get autoclean
+		fi
+		if type "zypper" &> /dev/null; then
+			sudo zypper clean --all
+		fi
+		if type "dnf" &> /dev/null; then
+			sudo dnf clean all
+		fi
+		if type "yum" &> /dev/null; then
+			sudo yum clean all
+		fi
 	fi
 }
-function ServiceStop(){
-	if type "systemctl" &> /dev/null; then
-		sudo systemctl stop "$*"
-	fi
-	if type "rc-service" &> /dev/null; then
-		sudo rc-service "$*"  stop
-	fi
-}
-function ServiceRestart(){
-	if type "systemctl" &> /dev/null; then
-		sudo systemctl restart "$*"
-	fi
-	if type "rc-service" &> /dev/null; then
-		sudo rc-service "$*"  restart
-	fi
-}
-function ServiceStatus(){
-	if type "systemctl" &> /dev/null; then
-		sudo systemctl status "$*"
-	fi
-	if type "rc-service" &> /dev/null; then
-		sudo rc-service "$*"  status
-	fi
-}
-function ServiceStartups(){
-	if type "systemctl" &> /dev/null; then
-		systemctl list-unit-files --type=service
-	fi
-	if type "rc-service" &> /dev/null; then
-		rc-update -v show
+
+function System(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Update" ];then
+		if type "emerge" &> /dev/null; then
+			sudo emerge --update --deep @world
+		fi
+		if type "pacman" &> /dev/null; then
+			sudo pacman -Syyu
+		fi
+		if type "apt-get" &> /dev/null; then
+			sudo apt-get dist-upgrade
+		fi
+		if type "zypper" &> /dev/null; then
+			sudo zypper update
+		fi
+		if type "dnf" &> /dev/null; then
+			sudo dnf update
+			sudo dnf upgrade
+		fi
+		if type "yum" &> /dev/null; then
+			sudo yum update
+		fi
 	fi
 }
-function ServiceEnable(){
-	if type "systemctl" &> /dev/null; then
-		 sudo systemctl enable "$*" 
-	fi
-	if type "rc-service" &> /dev/null; then
-		runlevel="default"
-		read -p "runlevel(default):" runlevel
-		sudo rc-update add "$*"  "$runlevel"
+
+function Start(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl start "$args"
+		fi
+		if type "rc-service" &> /dev/null; then
+			sudo rc-service "$args"  start
+		fi
 	fi
 }
-function ServiceDisable(){
-	if type "systemctl" &> /dev/null; then
-		 sudo systemctl disable "$*" 
+function Stop(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl stop "$args"
+		fi
+		if type "rc-service" &> /dev/null; then
+			sudo rc-service "$args"  stop
+		fi
 	fi
-	if type "rc-service" &> /dev/null; then
-		runlevel="default"
-		read -p "runlevel(default):" runlevel
-		sudo rc-update del "$*"  "$runlevel"
+}
+function Restart(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl restart "$args"
+		fi
+		if type "rc-service" &> /dev/null; then
+			sudo rc-service "$args"  restart
+		fi
+	fi
+}
+function Status(){
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl status "$args"
+		fi
+		if type "rc-service" &> /dev/null; then
+			sudo rc-service "$args"  status
+		fi
+	fi
+}
+function Startups(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			systemctl list-unit-files --type=service
+		fi
+		if type "rc-service" &> /dev/null; then
+			rc-update -v show
+		fi
+	fi
+}
+function Enable(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl enable "$args" 
+		fi
+		if type "rc-service" &> /dev/null; then
+			runlevel="default"
+			read -p "runlevel(default):" runlevel
+			sudo rc-update add "$args"  "$runlevel"
+		fi
+	fi
+}
+function Disable(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "Service" ];then
+		if type "systemctl" &> /dev/null; then
+			sudo systemctl disable "$args" 
+		fi
+		if type "rc-service" &> /dev/null; then
+			runlevel="default"
+			read -p "runlevel(default):" runlevel
+			sudo rc-update del "$args"  "$runlevel"
+		fi
 	fi
 }
 function remove(){
 	rm -frv "$*"
 }
 
-function NewCPP(){
-	if type "make" &> /dev/null; then
-		mkdir `pwd`"/$*"
-		cd `pwd`"/$*"
-		mkdir `pwd`"/src"
-		echo '#include <iostream>'>>`pwd`"/src/Main.cpp"
-		echo 'int main(){'>>`pwd`"/src/Main.cpp"
-		echo 'std::cout << "Hello World" << std::endl;'>>`pwd`"/src/Main.cpp"
-		echo 'return 0;}'>>`pwd`"/src/Main.cpp"
-		echo '#!/bin/bash'>>`pwd`"/build.sh"
-		echo 'cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug'>>`pwd`"/build.sh"
-		chmod +x `pwd`"/build.sh"
-		echo 'cmake_minimum_required (VERSION 3.5)' >> `pwd`"/CMakeLists.txt"
-		echo "project ($*)" >> `pwd`"/CMakeLists.txt"
-		echo 'set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")' >> `pwd`"/CMakeLists.txt"
-		echo 'set (source_dir "${PROJECT_SOURCE_DIR}/src/")' >> `pwd`"/CMakeLists.txt"
-		echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
-		echo "add_executable ($*"' ${source_files})' >> `pwd`"/CMakeLists.txt"
-		`pwd`"/./build.sh"
-		else
-		echo "you do not have make installed"
+function New(){
+	args=$(echo "$*" |grep -v "$1")
+	if [ "$1" == "CPP" ];then
+		if type "make" &> /dev/null; then
+			mkdir `pwd`"/$args"
+			cd `pwd`"/$args"
+			mkdir `pwd`"/src"
+			echo '#include <iostream>'>>`pwd`"/src/Main.cpp"
+			echo 'int main(){'>>`pwd`"/src/Main.cpp"
+			echo 'std::cout << "Hello World" << std::endl;'>>`pwd`"/src/Main.cpp"
+			echo 'return 0;}'>>`pwd`"/src/Main.cpp"
+			echo '#!/bin/bash'>>`pwd`"/build.sh"
+			echo 'cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug'>>`pwd`"/build.sh"
+			chmod +x `pwd`"/build.sh"
+			echo 'cmake_minimum_required (VERSION 3.5)' >> `pwd`"/CMakeLists.txt"
+			echo "project ($args)" >> `pwd`"/CMakeLists.txt"
+			echo 'set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")' >> `pwd`"/CMakeLists.txt"
+			echo 'set (source_dir "${PROJECT_SOURCE_DIR}/src/")' >> `pwd`"/CMakeLists.txt"
+			echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
+			echo "add_executable ($args"' ${source_files})' >> `pwd`"/CMakeLists.txt"
+			`pwd`"/./build.sh"
+			else
+			echo "you do not have make installed"
+		fi
 	fi
 }
 
