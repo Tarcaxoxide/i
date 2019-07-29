@@ -221,7 +221,7 @@ function package(){
 	fi
 }
 
-function System(){
+function system(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Update" ];then
 		if type "emerge" &> /dev/null; then
@@ -246,7 +246,7 @@ function System(){
 	fi
 }
 
-function Start(){
+function start(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -257,7 +257,7 @@ function Start(){
 		fi
 	fi
 }
-function Stop(){
+function stop(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -268,7 +268,7 @@ function Stop(){
 		fi
 	fi
 }
-function Restart(){
+function restart(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -279,7 +279,7 @@ function Restart(){
 		fi
 	fi
 }
-function Status(){
+function status(){
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl status "$args"
@@ -289,7 +289,7 @@ function Status(){
 		fi
 	fi
 }
-function Startups(){
+function startups(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -300,7 +300,7 @@ function Startups(){
 		fi
 	fi
 }
-function Enable(){
+function enable(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -313,7 +313,7 @@ function Enable(){
 		fi
 	fi
 }
-function Disable(){
+function disable(){
 	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "Service" ];then
 		if type "systemctl" &> /dev/null; then
@@ -330,9 +330,9 @@ function remove(){
 	rm -frv "$*"
 }
 
-function New(){
+function new(){
 	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "CPP" ];then
+	if [ "$1" == "cpp" ];then
 		if type "make" &> /dev/null; then
 			mkdir `pwd`"/$args"
 			cd `pwd`"/$args"
