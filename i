@@ -329,30 +329,27 @@ function remove(){
 	rm -frv "$*"
 }
 
-function new(){
-	args=$(echo "$*" |grep -v "$1")
-	if [ "$1" == "cpp" ];then
-		if type "make" &> /dev/null; then
-			mkdir `pwd`"/$args"
-			cd `pwd`"/$args"
-			mkdir `pwd`"/src"
-			echo '#include <iostream>'>>`pwd`"/src/Main.cpp"
-			echo 'int main(){'>>`pwd`"/src/Main.cpp"
-			echo 'std::cout << "Hello World" << std::endl;'>>`pwd`"/src/Main.cpp"
-			echo 'return 0;}'>>`pwd`"/src/Main.cpp"
-			echo '#!/bin/bash'>>`pwd`"/build.sh"
-			echo 'cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug'>>`pwd`"/build.sh"
-			chmod +x `pwd`"/build.sh"
-			echo 'cmake_minimum_required (VERSION 3.5)' >> `pwd`"/CMakeLists.txt"
-			echo "project ($args)" >> `pwd`"/CMakeLists.txt"
-			echo 'set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")' >> `pwd`"/CMakeLists.txt"
-			echo 'set (source_dir "${PROJECT_SOURCE_DIR}/src/")' >> `pwd`"/CMakeLists.txt"
-			echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
-			echo "add_executable ($args"' ${source_files})' >> `pwd`"/CMakeLists.txt"
-			`pwd`"/./build.sh"
-			else
-			echo "you do not have make installed"
-		fi
+function new_cpp(){
+	if type "make" &> /dev/null; then
+		mkdir `pwd`"/$*"
+		cd `pwd`"/$*"
+		mkdir `pwd`"/src"
+		echo '#include <iostream>'>>`pwd`"/src/Main.cpp"
+		echo 'int main(){'>>`pwd`"/src/Main.cpp"
+		echo 'std::cout << "Hello World" << std::endl;'>>`pwd`"/src/Main.cpp"
+		echo 'return 0;}'>>`pwd`"/src/Main.cpp"
+		echo '#!/bin/bash'>>`pwd`"/build.sh"
+		echo 'cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug'>>`pwd`"/build.sh"
+		chmod +x `pwd`"/build.sh"
+		echo 'cmake_minimum_required (VERSION 3.5)' >> `pwd`"/CMakeLists.txt"
+		echo "project ($*)" >> `pwd`"/CMakeLists.txt"
+		echo 'set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++14")' >> `pwd`"/CMakeLists.txt"
+		echo 'set (source_dir "${PROJECT_SOURCE_DIR}/src/")' >> `pwd`"/CMakeLists.txt"
+		echo 'file (GLOB source_files "${source_dir}/*.cpp")' >> `pwd`"/CMakeLists.txt"
+		echo "add_executable ($*"' ${source_files})' >> `pwd`"/CMakeLists.txt"
+		`pwd`"/./build.sh"
+		else
+		echo "you do not have make installed"
 	fi
 }
 
