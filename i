@@ -1,6 +1,26 @@
 #!/bin/bash
 
-export EDITOR='nano'
+export EDITOR='vim'
+
+function what(){
+	echo -e 'roll [low] [high]\t\t random betwen low and high'
+	echo -e 'get * \t\t simplification of git commands'
+	echo -e 'check_db\t\t updates package managers database'
+	echo -e 'repository\t\t lists package managers repository'
+	echo -e 'package\t\t deals with package management'
+	echo -e '\t install [package],uninstall [package],update,list,search [package],info [package],cleanup'
+	echo -e 'system\t\t deals with system wide package management'
+	echo -e '\tupdate'
+	echo -e 'start [service]\t\t starts a service'
+	echo -e 'stop [service]\t\t stops a service'
+	echo -e 'restart [service]\t\t restarts a service'
+	echo -e 'status [service]\t\t gets the status of a service'
+	echo -e 'startups\t\t list services that start on start up'
+	echo -e 'enable [service]\t\t enable a service to start on start up'
+	echo -e 'disable [service]\t\t disables a service from starting on start up'
+	echo -e 'remove\t\t rm -frv'
+	echo -e 'cpp_create [name]\t\t creates a cpp project'
+}
 
 function UpdateI(){
 	git add .
@@ -9,7 +29,7 @@ function UpdateI(){
 }
 
 function roll(){
-	 let result=$1*$((1 + RANDOM % $3))
+	 let result=$1*$((1 + RANDOM % $2))
 	 echo $result
 }
 
@@ -279,6 +299,7 @@ function restart(){
 	fi
 }
 function status(){
+	args=$(echo "$*" |grep -v "$1")
 	if [ "$1" == "service" ];then
 		if type "systemctl" &> /dev/null; then
 			sudo systemctl status "$args"
@@ -329,7 +350,7 @@ function remove(){
 	rm -frv "$*"
 }
 
-function new_cpp(){
+function cpp_create(){
 	if type "make" &> /dev/null; then
 		mkdir `pwd`"/$*"
 		cd `pwd`"/$*"
